@@ -23,6 +23,14 @@ const sessionOptions = {
   saveUninitialized: false,
 };
 
+if (process.env.NODE_ENV !== "development") {
+  sessionOptions.proxy = true;
+  sessionOptions.cookie = {
+    sameSite: "none",
+    secure: true,
+  };
+}
+
 app.use(session(sessionOptions));
 UserRoutes(app);
 app.listen(process.env.PORT || 4000);

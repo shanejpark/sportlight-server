@@ -1,15 +1,19 @@
 import * as dao from "./dao.js";
+
 let currentUser = null;
+
 function UserRoutes(app) {
   const updateUser = async (req, res) => {
     const { userId } = req.params;
     const status = await dao.updateUser(userId, req.body);
     currentUser = await dao.findUserById(userId);
+    // req.session["currentUser"] = currentUser;
     res.json(status);
   };
   const signin = async (req, res) => {
-    const { username, password } = req.body;
-    currentUser = await dao.findUserByCredentials(username, password);
+    const { email, password } = req.body;
+    currentUser = await dao.findUserByCredentials(email, password);
+    // req.session["currentUser"] = currentUser;
     res.json(currentUser);
   };
   const account = async (req, res) => {
@@ -32,19 +36,19 @@ function UserRoutes(app) {
     res.json(status);
   };
   const signup = async (req, res) => {
-    const user = await dao.findUserByUsername(req.body.username);
+    const user = await dao.findUserByEmail(req.body.email);
     if (user) {
-      res.status(400).json({ message: "Username already taken" });
+      res.status(400).json({ message: "Email already taken" });
     }
     currentUser = await dao.createUser(req.body);
+    // req.session["currentUser"] = currentUser;
     res.json(currentUser);
   };
   const signout = (req, res) => {
-    currentUser = null;
+    req.session.destroy();
     res.json(200);
   };
 
-  app.post("/api/users", createUser);
   app.post("/api/users", createUser);
   app.get("/api/users", findAllUsers);
   app.get("/api/users/:userId", findUserById);
