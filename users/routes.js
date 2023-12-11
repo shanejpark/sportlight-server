@@ -45,8 +45,9 @@ function UserRoutes(app) {
     res.json(currentUser);
   };
   const signout = (req, res) => {
-    req.session.destroy();
+    currentUser = null;
     res.json(200);
+    // req.session.destroy();
   };
 
   app.post("/api/users", createUser);
