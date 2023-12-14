@@ -6,8 +6,13 @@ import mongoose from "mongoose";
 import UserRoutes from "./users/routes.js";
 
 const CONNECTION_STRING = "mongodb://127.0.0.1:27017/sportlight";
-mongoose.connect(CONNECTION_STRING);
+const sessionOptions = {
+  secret: "any string",
+  resave: false,
+  saveUninitialized: false,
+};
 
+mongoose.connect(CONNECTION_STRING);
 const app = express();
 app.use(
   cors({
@@ -15,22 +20,7 @@ app.use(
     origin: "http://localhost:3000",
   })
 );
-app.use(express.json());
-
-const sessionOptions = {
-  secret: "any string",
-  resave: false,
-  saveUninitialized: false,
-};
-
-if (process.env.NODE_ENV !== "development") {
-  sessionOptions.proxy = true;
-  sessionOptions.cookie = {
-    sameSite: "none",
-    secure: true,
-  };
-}
-
 app.use(session(sessionOptions));
+app.use(express.json());
 UserRoutes(app);
 app.listen(process.env.PORT || 4000);
